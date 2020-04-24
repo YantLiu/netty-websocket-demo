@@ -51,7 +51,7 @@ public class ChannelHandlerPool {
     /**
      * 向连接池中添加连接
      */
-    public static synchronized void addClient(String devCode, Channel conn) {
+    public synchronized static void addClient(String devCode, Channel conn) {
         if (clientMap.get(devCode) != null) {//重复连接
             log.info("重复连接: " + devCode);
             removeClient(devCode);
