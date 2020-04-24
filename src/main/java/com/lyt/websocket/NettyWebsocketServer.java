@@ -23,21 +23,25 @@ public class NettyWebsocketServer {
         new NettyWebsocketServer().run(16000);
     }
 
-    /* PostConstruct 启动
     private static boolean flag = true;
+
+    //PostConstruct 单例启动
     @PostConstruct
     public void start() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (flag) {
-                    flag = false;
-                    new NettyWebsocketServer().run(16000);
+                    synchronized (NettyWebsocketServer.class) {
+                        if (flag) {
+                            flag = false;
+                            new NettyWebsocketServer().run(16000);
+                        }
+                    }
                 }
             }
         }).start();
     }
-    */
 
     public void run(int port) {
         log.info("===========================NettyWebsocketServer启动========================");
@@ -55,7 +59,7 @@ public class NettyWebsocketServer {
             // ChildChannelHandler 对出入的数据进行的业务操作,其继承ChannelInitializer
             b.childHandler(new ChildChannelHandler());
             Channel ch = b.bind(port).sync().channel();
-            log.info("ws:\\\\" + getLocalIP() + ":" + port + "?clientid=");
+            log.info("ws:\\\\" + getLocalIP() + ":" + port + "?devCode=");
             log.info("=========================NettyWebsocketServer启动完成====================");
             ch.closeFuture().sync();
         } catch (Exception e) {

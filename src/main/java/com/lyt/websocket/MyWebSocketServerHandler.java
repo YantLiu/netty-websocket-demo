@@ -3,7 +3,7 @@ package com.lyt.websocket;
 import com.alibaba.fastjson.JSONObject;
 import com.lyt.dto.BaseMessage;
 import com.lyt.enums.MessageWork;
-import com.lyt.messageconsumer.BaseMessageConsumer;
+import com.lyt.consumer.BaseMessageConsumer;
 import com.lyt.utils.SpringContextHolder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -30,18 +30,18 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 
     /**
      * @Description: 更新柜机在线状态
-     * @Param: [cabinetCode, onelie]
+     * @Param: [devCode, onelie]
      * @return: void
      * @Author: lyt
      * @Date: 2020/3/26
      */
-    private void setClientStatus(String clientid, boolean online) {
-        if (clientid == null) {//防止重复触发
+    private void setClientStatus(String devCode, boolean online) {
+        if (devCode == null) {//防止重复触发
             return;
         }
         //离线, 设备池中移除设备
         if (!online) {
-            ChannelHandlerPool.onRemoveClient(clientid);
+            ChannelHandlerPool.onRemoveClient(devCode);
         }
     }
 
@@ -59,7 +59,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         log.info("MyWebSocketServerHandler.channelInactive");
-        this.setClientStatus(ChannelHandlerPool.getClientid(ctx.channel()), false);
+        this.setClientStatus(ChannelHandlerPool.getDevCode(ctx.channel()), false);
     }
 
     /**
@@ -68,12 +68,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("MyWebSocketServerHandler.exceptionCaught", cause);
-        /*
-        String clientid = ChannelHandlerPool.getClientid(ctx.channel());
-        this.updatePbansCabinetOnline(clientid, false);
-        //移除设备
-        ChannelHandlerPool.onRemoveClient(ChannelHandlerPool.getClientid(ctx.channel()));
-         */
     }
 
     @Override
@@ -132,20 +126,20 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
         log.debug("服务端收到消息：" + message);
         BaseMessage<String> baseMessage = JSONObject.parseObject(message, BaseMessage.class);
         //根据MessageWork取到消费者类型, 调用消费者
-        MessageWork messageWork = MessageWork.get(baseMessage.getWork(), baseMessage.getType());
+        MessageWork messageWork = MessageWork.get(baseMessage.getWork());
         if (messageWork.getClz() != null) {
             BaseMessageConsumer consumer = SpringContextHolder.getBean(messageWork.getClz());
-            consumer.run(ChannelHandlerPool.getClientid(ctx.channel()), baseMessage);
+            consumer.run(ChannelHandlerPool.getDevCode(ctx.channel()), baseMessage);
         }
     }
 
-    private String getClientid(String uri) {
+    private String getDevCode(String uri) {
         QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
         Map<String, List<String>> parameters = queryStringDecoder.parameters();
-        if (CollectionUtils.isEmpty(parameters.get("clientid")) || StringUtils.isEmpty(parameters.get("clientid").get(0))) {
+        if (CollectionUtils.isEmpty(parameters.get("devCode")) || StringUtils.isEmpty(parameters.get("devCode").get(0))) {
             return null;
         }
-        return parameters.get("clientid").get(0);
+        return parameters.get("devCode").get(0);
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) {
@@ -157,10 +151,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
         //获取url后置参数
         HttpMethod method = req.method();
         String uri = req.getUri();
-        //取clientid
-        String clientid = getClientid(uri);
-        if (clientid == null) {
-            log.warn("clientid为空, 连接断开");
+        //取devCode
+        String devCode = getDevCode(uri);
+        if (devCode == null) {
+            log.warn("devCode为空, 连接断开");
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
             ctx.close();
             return;
@@ -174,8 +168,8 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
             handshaker.handshake(ctx.channel(), req);
         }
         //握手成功, 添加设备
-        ChannelHandlerPool.addClient(clientid, ctx.channel());
-        this.setClientStatus(clientid, true);
+        ChannelHandlerPool.addClient(devCode, ctx.channel());
+        this.setClientStatus(devCode, true);
     }
 
     private static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, DefaultFullHttpResponse res) {

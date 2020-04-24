@@ -31,15 +31,15 @@ public class ChannelHandlerPool {
     /**
      * 获取连接
      */
-    public static Channel getChannel(String clientID) {
-        Channel sc = clientMap.get(clientID);
+    public static Channel getChannel(String devCode) {
+        Channel sc = clientMap.get(devCode);
         return sc;
     }
 
     /**
      * 获取连接id
      */
-    public static String getClientid(Channel conn) {
+    public static String getDevCode(Channel conn) {
         for (ConcurrentSkipListMap.Entry<String, Channel> entry : clientMap.entrySet()) {
             if (entry.getValue().id().asShortText().equals(conn.id().asShortText())) {
                 return entry.getKey();
@@ -51,10 +51,10 @@ public class ChannelHandlerPool {
     /**
      * 向连接池中添加连接
      */
-    public static synchronized void addClient(String clientid, Channel conn) {
-        if (clientMap.get(clientid) != null) {//重复连接
-            log.info("重复连接: " + clientid);
-            removeClient(clientid);
+    public static synchronized void addClient(String devCode, Channel conn) {
+        if (clientMap.get(devCode) != null) {//重复连接
+            log.info("重复连接: " + devCode);
+            removeClient(devCode);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -62,9 +62,9 @@ public class ChannelHandlerPool {
             }
         }
 
-        log.info("设备连接: " + clientid + ", session: " + conn.id().asShortText());
+        log.info("设备连接: " + devCode + ", session: " + conn.id().asShortText());
         if (conn != null) {
-            clientMap.put(clientid, conn);    //添加连接
+            clientMap.put(devCode, conn);    //添加连接
             onLineCount.incrementAndGet();
             log.info("当前设备数：" + onLineCount.intValue());
         }
@@ -83,13 +83,13 @@ public class ChannelHandlerPool {
     /**
      * 移除连接池中的连接
      */
-    public static void onRemoveClient(String clientid) {
-        log.info("设备已断开连接: " + clientid);
-        if (StringUtils.isEmpty(clientid)) {
+    public static void onRemoveClient(String devCode) {
+        log.info("设备已断开连接: " + devCode);
+        if (StringUtils.isEmpty(devCode)) {
             return;
         }
-        Channel conn = clientMap.get(clientid);
-        clientMap.remove(clientid);  //移除连接
+        Channel conn = clientMap.get(devCode);
+        clientMap.remove(devCode);  //移除连接
         onLineCount.decrementAndGet();
         log.info("当前设备数：" + onLineCount.intValue());
     }
@@ -97,12 +97,12 @@ public class ChannelHandlerPool {
     /**
      * 移除连接池中的连接
      */
-    public static boolean removeClient(String clientid) {
-        if (StringUtils.isEmpty(clientid)) {
+    public static boolean removeClient(String devCode) {
+        if (StringUtils.isEmpty(devCode)) {
             return false;
         }
-        Channel conn = clientMap.get(clientid);
-        log.info("服务器主动断开连接: " + clientid + ", session: " + conn.id().asShortText());
+        Channel conn = clientMap.get(devCode);
+        log.info("服务器主动断开连接: " + devCode + ", session: " + conn.id().asShortText());
         if (conn != null) {
             if (conn != null) {
                 conn.close();
@@ -128,19 +128,19 @@ public class ChannelHandlerPool {
 
 
     public static void sendMessageToClient(Channel conn, Object data) {
-        sendMessageToClient(getClientid(conn), data);
+        sendMessageToClient(getDevCode(conn), data);
     }
 
     /**
      * 向特定的用户发送数据
      */
-    public static void sendMessageToClient(String clientId, Object data) {
+    public static void sendMessageToClient(String devCode, Object data) {
         if (data == null) {
             return;
         }
-        log.debug("向clientId[{}]发送消息: {}", clientId, JSON.toJSONString(data));
-        if (clientMap.containsKey(clientId)) {
-            sendMessage(clientMap.get(clientId), data);
+        log.debug("向devCode[{}]发送消息: {}", devCode, JSON.toJSONString(data));
+        if (clientMap.containsKey(devCode)) {
+            sendMessage(clientMap.get(devCode), data);
         } else {
             throw new MsgException("设备未连接");
         }

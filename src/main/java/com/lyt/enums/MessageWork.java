@@ -1,21 +1,21 @@
 package com.lyt.enums;
 
-import com.lyt.messageconsumer.*;
+import com.lyt.consumer.*;
 
 import java.util.Arrays;
 
 /**
  * @author liuyanting
- * @description work类型
+ * @description 报文类型
  * @date: 2019/9/4
  */
 public enum MessageWork {
-    //远程控制
+    //控制
+    DEV_REBOOT("DEV_REBOOT", MessageType.CONTROL, "柜机重启", CommonControlConsumer.class),
     DOOR_OPEN("DOOR_OPEN", MessageType.CONTROL, "舱位开门", DoorOpenConsumer.class),
     DOOR_RECHARGE("DOOR_RECHARGE", MessageType.CONTROL, "舱位通电/断电", CommonControlConsumer.class),
-    CABINET_VOICE("CABINET_VOICE", MessageType.CONTROL, "柜机音量", CommonControlConsumer.class),
-    CABINET_REBOOT("CABINET_REBOOT", MessageType.CONTROL, "柜机重启", CommonControlConsumer.class),
 
+    //查询
     DOORS_USING_SEARCH("DOORS_USING_SEARCH", MessageType.SEARCH, "查询舱位占用情况", DoorUsingSearchConsumer.class),
     ;
 
@@ -51,9 +51,9 @@ public enum MessageWork {
         return this.work.equals(work) && this.type.isEqual(type);
     }
 
-    public static MessageWork get(String work, String type) {
+    public static MessageWork get(String work) {
         return Arrays.asList(MessageWork.values()).stream()
-                .filter(a -> a.work.equals(work) && a.type.isEqual(type))
+                .filter(a -> a.work.equals(work))
                 .findFirst().orElse(null);
     }
 
@@ -64,9 +64,11 @@ public enum MessageWork {
     }
 
     /**
-     * @author liuyanting
-     * @description 消息类型
-     * @date: 2019/9/4
+     * @Description: 消息类型
+     * @Param:
+     * @return:
+     * @Author: lyt
+     * @Date: 2020/4/24
      */
     public enum MessageType {
         CONTROL,//控制
