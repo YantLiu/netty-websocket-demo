@@ -58,7 +58,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.info("MyWebSocketServerHandler.channelInactive");
         this.setClientStatus(ChannelHandlerPool.getDevCode(ctx.channel()), false);
     }
 

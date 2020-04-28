@@ -52,16 +52,7 @@ public class ChannelHandlerPool {
      * 向连接池中添加连接
      */
     public synchronized static void addClient(String devCode, Channel conn) {
-        if (clientMap.get(devCode) != null) {//重复连接
-            log.info("重复连接: " + devCode);
-            removeClient(devCode);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-
+        removeClient(devCode);
         log.info("设备连接: " + devCode + ", session: " + conn.id().asShortText());
         if (conn != null) {
             clientMap.put(devCode, conn);    //添加连接
@@ -88,7 +79,6 @@ public class ChannelHandlerPool {
         if (StringUtils.isEmpty(devCode)) {
             return;
         }
-        Channel conn = clientMap.get(devCode);
         clientMap.remove(devCode);  //移除连接
         onLineCount.decrementAndGet();
         log.info("当前设备数：" + onLineCount.intValue());
@@ -98,19 +88,14 @@ public class ChannelHandlerPool {
      * 移除连接池中的连接
      */
     public static boolean removeClient(String devCode) {
-        if (StringUtils.isEmpty(devCode)) {
-            return false;
-        }
         Channel conn = clientMap.get(devCode);
-        log.info("服务器主动断开连接: " + devCode + ", session: " + conn.id().asShortText());
-        if (conn != null) {
-            if (conn != null) {
-                conn.close();
-            }
-            return true;
-        } else {
+        if (conn == null) {
             return false;
         }
+        log.info("服务器主动断开连接: " + devCode + ", session: " + conn.id().asShortText());
+        onRemoveClient(devCode);
+        conn.close();
+        return true;
     }
 
     /**
