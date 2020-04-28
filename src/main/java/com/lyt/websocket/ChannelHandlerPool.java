@@ -52,10 +52,10 @@ public class ChannelHandlerPool {
      * 向连接池中添加连接
      */
     public synchronized static void addClient(String devCode, Channel conn) {
-        removeClient(devCode);
+        removeClient(devCode);//顶线
         log.info("设备连接: " + devCode + ", session: " + conn.id().asShortText());
         if (conn != null) {
-            clientMap.put(devCode, conn);    //添加连接
+            clientMap.put(devCode, conn);//添加连接
             onLineCount.incrementAndGet();
             log.info("当前设备数：" + onLineCount.intValue());
         }
