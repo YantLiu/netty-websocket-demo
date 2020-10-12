@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.lyt.enums.MessageWork;
 import com.lyt.utils.ValidateUtils;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @description: 基础报文
@@ -13,34 +16,22 @@ import lombok.Data;
  * @create: 2020-03-23 17:18
  **/
 @Data
+@Builder
+@AllArgsConstructor
 public class BaseMessage<T> {
-    @ApiModelProperty("报文类型")
+    @ApiModelProperty("事件对象[cabinet: 柜机, door: 柜位, server: 服务器]")
+    private String object;
+
+    @ApiModelProperty("报文类型[control: 柜机控制, report: 上报, warn: 告警]")
+    private String type;
+
+    @ApiModelProperty("事件名")
     private String work;
 
-    @ApiModelProperty("业务id")
-    private String transactionId;
-
-    @ApiModelProperty("是否成功")
-    private boolean success;
-
-    @ApiModelProperty("错误消息")
-    private String errorMessage;
-
-    @ApiModelProperty("报文体")
+    @ApiModelProperty("对象数据")
     private T data;
 
     public BaseMessage() {
-    }
-
-    public BaseMessage(MessageWork work, String transactionId) {
-        this.work = work.getWork();
-        this.transactionId = transactionId;
-    }
-
-    public BaseMessage(MessageWork work, String transactionId, T data) {
-        this.work = work.getWork();
-        this.transactionId = transactionId;
-        this.data = data;
     }
 
     @Override
@@ -49,6 +40,6 @@ public class BaseMessage<T> {
     }
 
     public static void main(String[] args) {
-        System.out.println(new BaseMessage<>(MessageWork.DOORS_USING_SEARCH, "Tank-756FG_1", 1));
+        System.out.println(BaseMessage.builder().object("cabinet").type("control").work("cabinetDoorOpen").data(new Object()).build());
     }
 }

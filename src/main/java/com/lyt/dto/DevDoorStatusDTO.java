@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @description: 舱位状态
+ * @description: 柜位状态
  * @author: lyt
  * @create: 2020-03-25 14:34
  **/
 @Data
 public class DevDoorStatusDTO {
     /*
-     * 舱位编号
+     * 柜位编号
      */
     private int door;
     /*

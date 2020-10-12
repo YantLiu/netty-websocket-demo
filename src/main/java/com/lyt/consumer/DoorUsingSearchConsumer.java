@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 /**
- * @description: 报文消费者-舱位状态查询
+ * @description: 报文消费者-柜位状态查询
  * @author: lyt
  * @create: 2020-03-24 16:39
  **/
@@ -19,8 +19,8 @@ import java.util.UUID;
 public class DoorUsingSearchConsumer extends BaseMessageConsumer {
     @Override
     public void run(String devCode, BaseMessage baseMessage) {
-        String id = UUID.randomUUID().toString().replaceAll("-", "");
-        BaseMessage ret = new BaseMessage(MessageWork.DOORS_USING_SEARCH, id, DevDoorStatusDTO.getList());
-        ChannelHandlerPool.sendMessageToClient(devCode, ret);
+//        String id = UUID.randomUUID().toString().replaceAll("-", "");
+//        BaseMessage ret = new BaseMessage(MessageWork.DOORS_USING_SEARCH, id, DevDoorStatusDTO.getList());
+//        ChannelHandlerPool.sendMessageToClient(devCode, ret);
     }
 }

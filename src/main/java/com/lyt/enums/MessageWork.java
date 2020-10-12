@@ -12,11 +12,11 @@ import java.util.Arrays;
 public enum MessageWork {
     //控制
     DEV_REBOOT("DEV_REBOOT", MessageType.CONTROL, "柜机重启", CommonControlConsumer.class),
-    DOOR_OPEN("DOOR_OPEN", MessageType.CONTROL, "舱位开门", DoorOpenConsumer.class),
-    DOOR_RECHARGE("DOOR_RECHARGE", MessageType.CONTROL, "舱位通电/断电", CommonControlConsumer.class),
+    DOOR_OPEN("DOOR_OPEN", MessageType.CONTROL, "柜位开门", DoorOpenConsumer.class),
+    DOOR_RECHARGE("DOOR_RECHARGE", MessageType.CONTROL, "柜位通电/断电", CommonControlConsumer.class),
 
     //查询
-    DOORS_USING_SEARCH("DOORS_USING_SEARCH", MessageType.SEARCH, "查询舱位占用情况", DoorUsingSearchConsumer.class),
+    DOORS_USING_SEARCH("DOORS_USING_SEARCH", MessageType.SEARCH, "查询柜位占用情况", DoorUsingSearchConsumer.class),
     ;
 
     private final String work;
