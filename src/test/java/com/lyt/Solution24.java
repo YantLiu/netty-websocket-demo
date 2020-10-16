@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @Author: liuyanting
- * @Description: 530. 二叉搜索树的最小绝对差
+ * @Description: 24. 两两交换链表中的节点
  * @Date: 2020-10-12
  **/
 public class Solution24 {
