@@ -61,7 +61,7 @@ public class Solution402 {
         char x = '0';
         int i = 0;
         for (; i < chars.length; i++) {
-            if (chars[i] - x != 0) {
+            if (chars[i] == x) {
                 break;
             }
         }
