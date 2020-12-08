@@ -11,7 +11,7 @@ public class Solution1641 {
     }
 
     public static int minimumSwap(String s1, String s2) {
-        if (s1 == null || s1 == "" || s1.equals(s2)) {
+        if (s1 == null || s1 == "") {
             return 0;
         }
         int length = s1.length();
