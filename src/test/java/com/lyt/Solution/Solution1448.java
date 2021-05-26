@@ -1,9 +1,6 @@
-package com.lyt;
+package com.lyt.Solution;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Author: liuyanting

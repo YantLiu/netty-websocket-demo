@@ -1,4 +1,4 @@
-package com.lyt;
+package com.lyt.Solution;
 
 import lombok.extern.slf4j.Slf4j;
 

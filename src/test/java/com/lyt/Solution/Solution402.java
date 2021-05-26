@@ -1,4 +1,4 @@
-package com.lyt;
+package com.lyt.Solution;
 
 import io.swagger.models.auth.In;
 

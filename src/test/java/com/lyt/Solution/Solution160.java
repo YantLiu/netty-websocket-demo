@@ -1,4 +1,4 @@
-package com.lyt;
+package com.lyt.Solution;
 
 import java.util.ArrayList;
 import java.util.List;

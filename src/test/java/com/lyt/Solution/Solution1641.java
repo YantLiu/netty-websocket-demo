@@ -1,4 +1,4 @@
-package com.lyt;
+package com.lyt.Solution;
 
 /**
  * @Author: liuyanting
